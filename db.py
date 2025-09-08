@@ -73,9 +73,9 @@ def init_db():
     # coping assesment table
     con.execute("""
     CREATE SEQUENCE IF NOT EXISTS coping_assessment_seq START 1;
-        
-        CREATE TABLE IF NOT EXISTS coping_assesments (
-            assesment_id INTEGER DEFAULT nextval ('coping_assesment_seq') PRIMARY KEY,
+
+        CREATE TABLE IF NOT EXISTS coping_assessments (
+            assessment_id INTEGER DEFAULT nextval ('coping_assessment_seq') PRIMARY KEY,
             email TEXT,
             date DATE,
             q1 INTEGER, q2 INTEGER, q3 INTEGER, q4 INTEGER, q5 INTEGER,
@@ -120,3 +120,9 @@ def init_db():
     """)
 
     con.close() # close the connection after table creation
+
+if __name__ == "__main__":
+    # Ensure data directory exists
+    os.makedirs("data", exist_ok=True)
+    init_db()
+    print("Database initialized successfully!")
