@@ -20,12 +20,12 @@ st.title("Mother Care")
 
 # if logged in as admin, show admin interface
 if st.session_state.login_state == 'admin':
-    from pages import admin
+    import admin
     admin.show_admin()
 
 # if logged in as user, show user interface
 elif st.session_state.login_state == 'user' and st.session_state.logged_in:
-    from pages import user_dashboard
+    import user_dashboard
     user_dashboard.show_user_dashboard()
 
 # if not logged in, show login/signup options
