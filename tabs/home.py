@@ -8,38 +8,34 @@ def show_home():
 
     email = st.session_state.user_email #get email of logged in user
 
-    con = get_connection() #connect to db
+    con = get_connection() #connect to DB
+    rows = con.execute("SELECT date, mood_score, sleep_hours FROM mood_sleep_logs WHERE email = ? ORDER BY date ASC LIMIT 7", (email,)).fetchall()
+    con.close()
+    
+    if rows:
+        df = pd.DataFrame(rows, columns=["Date", "Mood Score", "Sleep Hours"])
+        df["Date"] = pd.to_datetime(df["Date"]) # convert date column to datetime
 
-    # Fetch mood logs
-    mood_data = con.execute("SELECT date, mood FROM mood_sleep_logs WHERE email = ? ORDER BY date", (email,)).fetchall()
-    mood_df = pd.DataFrame(mood_data, columns = ["Date", "Mood"])
+        # mood over time graph
+        st.subheader("Mood over the past week")
+        mood_chart = df.set_index("Date")["Mood Score"]
+        st.line_chart(mood_chart)
 
-    # Fetch sleep logs
-    sleep_data = con.execute("SELECT date, sleep_hours FROM mood_sleep_logs WHERE email = ? ORDER BY date", (email,)).fetchall()
-    sleep_df = pd.DataFrame(sleep_data, columns = ["Date", "Sleep Hours"])
+        # sleep over time graph
+        st.subheader("Sleep Hours over the past week")
+        sleep_chart = df.set_index("Date")["Sleep Hours"]
+        st.line_chart(sleep_chart)
 
-    con.close() #close db connection
+        # Averages 
+        avg_mood = df["Mood Score"].mean()
+        avg_sleep = df["Sleep Hours"].mean()
 
-    # display mood graph and average mood
-    if not mood_df.empty:
-        st.subheader("Mood Over Time")
-        mood_df = mood_df.set_index("Date")
-        st.line_chart(mood_df)
-
-        avg_mood = mood_df["Mood"].mean()
-        st.metric("Average Mood", f"{avg_mood:.2f}")
+        col1, col2 = st.columns(2)
+        col1.metric(f"Average Mood" , f"{avg_mood:.2f} / 10")
+        col2.metric(f"Average Sleep", f"{avg_sleep:.2f} hours")
 
     else:
-        st.info("No mood logs found. Please add your mood entries.")
+        st.info("It looks like you haven't logged any mood or sleep data yet. Start tracking today in the 'Mood & Sleep Logs' tab!")
 
-    # display sleep graph and average sleep hours
-    if not sleep_df.empty:
-        st.subheader("Sleep Hours Over Time")
-        sleep_df = sleep_df.set_index("Date")
-        st.line_chart(sleep_df)
 
-        avg_sleep = sleep_df["Sleep Hours"].mean()
-        st.metric("Average Sleep Hours", f"{avg_sleep:.1f}")
-    else:
-        st.info("No sleep logs found. Please add your sleep entries.")
-
+    
