@@ -13,6 +13,18 @@ def show_user_dashboard():
 
     st.title(f"Hey {st.session_state.user_name}, welcome to your dashboard!")
 
+    # Add logout in sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.write(f"**Logged in as:** {st.session_state.user_name}")
+    if st.sidebar.button("🚪 Logout"):
+        st.session_state.login_state = None
+        st.session_state.logged_in = False
+        st.session_state.user_email = ""
+        st.session_state.user_name = ""
+        st.session_state.user_age = None
+        st.success("Logged out successfully.")
+        st.rerun()
+
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Home", "Mood & Sleep Logs", "Screening Tests", "Coping Cards", "References", "About"])
 
     with tab1:

@@ -43,7 +43,7 @@ else:
             with st.form("new_user_form"):
                 name = st.text_input("Name")
                 email = st.text_input("Email")
-                age = st.number_input("Age", min_value=13, max_value=120, step=1)
+                age = st.number_input("Age", min_value=13, max_value=120, value= 25, step=1)
                 # password = st.text_input("Password", type="password") 
                 submitted = st.form_submit_button("Create Account")
                 
