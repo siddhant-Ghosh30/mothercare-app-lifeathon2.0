@@ -82,13 +82,13 @@ def show_edps():
         if harmful_thoughts_score >= 1:
             interpretation = "Warning: Thoughts of harming yourself are present. Please seek professional help immediately."
         elif total_score < 8:
-            interpretation = "Depression not likely. Continue support and self-care."
+            interpretation = "Score below 8: Depression not likely. Continue support and self-care."
         elif total_score <= 11:
-            interpretation = "Depression possible. Support, re-screen in 2–4 weeks."
+            interpretation = "Score between 8 - 11: Depression possible. Support is recommended, re-screen in 2–4 weeks."
         elif total_score <= 13:
-            interpretation = "Fairly high possibility of depression. Monitor and support."
+            interpretation = "Score between 11 - 13: Fairly high possibility of depression. Monitor and support."
         else:
-            interpretation = "Probable depression. Diagnostic assessment recommended."
+            interpretation = "Score above 13: Probable depression. Diagnostic assessment recommended."
 
         # Save to database
         email = st.session_state.user_email
