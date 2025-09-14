@@ -2,7 +2,7 @@ import streamlit as st
 from datetime import datetime
 from db import get_connection
 
-def show_epds():
+def show_edps():
     st.header("Edinburgh Postnatal Depression Scale (EPDS)")
 
     questions = [

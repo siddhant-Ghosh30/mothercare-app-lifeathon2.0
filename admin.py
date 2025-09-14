@@ -34,19 +34,19 @@ def show_admin():
         
         if table == "mood_sleep_logs":
             query = """
-            SELECT mood_sleep_logs.*, users.name 
+            SELECT mood_sleep_logs.*, users.name as user_name
             FROM mood_sleep_logs
             LEFT JOIN users ON mood_sleep_logs.email = users.email
             """
-        elif table == "epds_results":
+        elif table == "edps_results":
             query = """
-            SELECT epds_results.*, users.name
-            FROM epds_results
-            LEFT JOIN users ON epds_results.email = users.email
+            SELECT edps_results.*, users.name as user_name
+            FROM edps_results
+            LEFT JOIN users ON edps_results.email = users.email
             """
         elif table == "pbq_results":
             query = """
-            SELECT pbq_results.*, users.name
+            SELECT pbq_results.*, users.name as user_name
             FROM pbq_results
             LEFT JOIN users ON pbq_results.email = users.email
             """
