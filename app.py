@@ -57,7 +57,7 @@ else:
                         con.execute("INSERT INTO users (email, name, age) VALUES (?, ?, ?)", (email, name, age))
                         con.close()
                         st.success("Account created successfully. Please log in.")
-                        st.rerun()
+                        # st.rerun()
 
         elif user_option == "Existing User":
             with st.form("existing_user_form"):
