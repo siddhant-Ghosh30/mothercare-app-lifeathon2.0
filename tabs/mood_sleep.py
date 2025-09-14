@@ -56,10 +56,10 @@ def show_mood_sleep_logs():
     if st.button("View Past Entries"):
         st.subheader("Your Past Logs")
         con = get_connection()
-        rows = con.execute("SELECT date, mood, sleep_hours FROM mood_sleep_logs WHERE email = ? ORDER BY date DESC", (email,)).fetchall()
+        rows = con.execute("SELECT date, mood_score, sleep_hours FROM mood_sleep_logs WHERE email = ? ORDER BY date DESC", (email,)).fetchall()
         con.close()
         if rows:
-            df = pd.DataFrame(rows, columns=["Date", "Mood", "Sleep Hours"])
+            df = pd.DataFrame(rows, columns=["Date", "Mood Score", "Sleep Hours"])
             st.dataframe(df)
         else:
             st.info("You have not logged any entries yet.")

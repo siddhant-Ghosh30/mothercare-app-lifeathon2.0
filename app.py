@@ -15,6 +15,8 @@ if 'username' not in st.session_state:
     st.session_state.username = "" # for admin
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
+if 'user_age' not in st.session_state:
+    st.session_state.user_age = None
 
 st.title("Mother Care")
 
@@ -41,6 +43,7 @@ else:
             with st.form("new_user_form"):
                 name = st.text_input("Name")
                 email = st.text_input("Email")
+                age = st.number_input("Age", min_value=13, max_value=120, step=1)
                 # password = st.text_input("Password", type="password") 
                 submitted = st.form_submit_button("Create Account")
                 
@@ -51,7 +54,7 @@ else:
                         st.error("User with this email already exists.")
                     else:
                         # password_hash = hashlib.sha256(password.encode()).hexdigest()
-                        con.execute("INSERT INTO users (email, name) VALUES (?, ?)", (email, name))
+                        con.execute("INSERT INTO users (email, name, age) VALUES (?, ?, ?)", (email, name, age))
                         con.close()
                         st.success("Account created successfully. Please log in.")
                         st.rerun()
@@ -64,9 +67,10 @@ else:
                 submitted = st.form_submit_button("Login")
                 if submitted:
                     con = get_connection()
-                    result = con.execute("SELECT name FROM users WHERE email = ?", (email,)).fetchone()
+                    result = con.execute("SELECT name, age FROM users WHERE email = ?", (email,)).fetchone()
                     con.close()
                     if result != None and result[0] == name:
+                        st.session_state.user_age = result[1]
                         st.session_state.logged_in = True
                         st.session_state.login_state = 'user'
                         st.session_state.user_email = email
