@@ -31,7 +31,29 @@ def show_admin():
 
     for table in tables:
         st.markdown(f"### {table}")
-        df = pd.read_sql_query(f"SELECT * FROM {table}", con)
+        
+        if table == "mood_sleep_logs":
+            query = """
+            SELECT mood_sleep_logs.*, users.name 
+            FROM mood_sleep_logs
+            LEFT JOIN users ON mood_sleep_logs.email = users.email
+            """
+        elif table == "epds_results":
+            query = """
+            SELECT epds_results.*, users.name
+            FROM epds_results
+            LEFT JOIN users ON epds_results.email = users.email
+            """
+        elif table == "pbq_results":
+            query = """
+            SELECT pbq_results.*, users.name
+            FROM pbq_results
+            LEFT JOIN users ON pbq_results.email = users.email
+            """
+        else:
+            query = f"SELECT * FROM {table}"
+
+        df = pd.read_sql_query(query, con)
         st.dataframe(df)
 
     con.close()
