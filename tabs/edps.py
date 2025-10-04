@@ -70,46 +70,54 @@ def show_edps():
         q_scores = []
         harmful_thoughts_score = 0
 
-        for i, (q, answer) in enumerate(responses):
-            score_index = q["options"].index(answer)
-            score = q["scores"][score_index]
-            total_score += score
-            q_scores.append(score)
-            if i == 9:  # Last question
-                harmful_thoughts_score = score
+    for i, (q, answer) in enumerate(responses):
+        score_index = q["options"].index(answer)
+        score = q["scores"][score_index]
+        total_score += score
+        q_scores.append(score)
+        if i == 9:  # Last question
+            harmful_thoughts_score = score
 
-        # Interpretation
-        if harmful_thoughts_score >= 1:
-            interpretation = "Warning: Thoughts of harming yourself are present. Please seek professional help immediately."
-        elif total_score < 8:
-            interpretation = "Score below 8: Depression not likely. Continue support and self-care."
-        elif total_score <= 11:
-            interpretation = "Score between 8 - 11: Depression possible. Support is recommended, re-screen in 2–4 weeks."
-        elif total_score <= 13:
-            interpretation = "Score between 11 - 13: Fairly high possibility of depression. Monitor and support."
-        else:
-            interpretation = "Score above 13: Probable depression. Diagnostic assessment recommended."
+    # Create base interpretation based on total score
+    if total_score < 8:
+        base_interpretation = "Score below 8: Depression not likely. Continue support and self-care."
+        alert_type = "success"
+    elif total_score <= 11:
+        base_interpretation = "Score between 8 - 11: Depression possible. Support is recommended, re-screen in 2–4 weeks."
+        alert_type = "warning"
+    elif total_score <= 13:
+        base_interpretation = "Score between 11 - 13: Fairly high possibility of depression. Monitor and support."
+        alert_type = "warning"
+    else:
+        base_interpretation = "Score above 13: Probable depression. Diagnostic assessment recommended."
+        alert_type = "error"
 
-        # Save to database
-        email = st.session_state.user_email
-        today = datetime.now().date().isoformat()
+    # Add harmful thoughts warning if present
+    if harmful_thoughts_score >= 1:
+        interpretation = f"⚠️ CRITICAL: Thoughts of harming yourself are present. Please seek professional help immediately.\n\nAdditional Assessment: {base_interpretation}"
+        alert_type = "error"  # Override to error for any harmful thoughts
+    else:
+        interpretation = base_interpretation
+
+    # Save to database
+    email = st.session_state.user_email
+    today = datetime.now().date().isoformat()
+    
+    con = get_connection()
+    con.execute("""
+        INSERT INTO edps_results (email, date, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, total_score, interpretation)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (email, today, *q_scores, total_score, interpretation))
+    con.close()
+
+    st.write(f"**Your total score is: {total_score}**")
+
+    # Display appropriate alert
+    if alert_type == "error":
+        st.error(interpretation + " You can contact any Hospital from the referred list in the references tab.")
+    elif alert_type == "warning":
+        st.warning(interpretation)
+    else:
+        st.success(interpretation)
         
-        con = get_connection()
-        con.execute("""
-            INSERT INTO edps_results (email, date, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, total_score, interpretation)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (email, today, *q_scores, total_score, interpretation))
-        con.close()
-
-        st.write(f"**Your total score is: {total_score}**")
-
-        if harmful_thoughts_score >= 1:
-            st.error(interpretation + " You can contact any Hospital from the referred list in the references tab.")
-        elif total_score < 8:
-            st.success(interpretation)
-        elif total_score <= 13:
-            st.warning(interpretation)
-        else:
-            st.error(interpretation)
-            
-        st.success("Results saved successfully!")
+    st.success("Results saved successfully!")
