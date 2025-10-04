@@ -19,6 +19,7 @@ if 'user_age' not in st.session_state:
     st.session_state.user_age = None
 
 st.title("Mother Care")
+st.image("mothercare_logo.png")
 
 # if logged in as admin, show admin interface
 if st.session_state.login_state == 'admin':
