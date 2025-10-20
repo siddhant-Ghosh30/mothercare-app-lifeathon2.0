@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
-from db import get_connection
+from db import get_connection, DB_Path
+import os
 
 def show_admin():
+    # Access control
     if "logged_in" not in st.session_state or not st.session_state.logged_in or st.session_state.login_state != "admin":
         st.error("Access denied. Please log in as admin.")
         st.stop()
@@ -10,7 +12,7 @@ def show_admin():
     st.title("Admin Dashboard")
     st.write("Welcome, you have full access to the database for demonstration purposes.")
 
-    # logout in sidebar
+    # Logout in sidebar
     st.sidebar.markdown("---")
     if st.sidebar.button("🚪 Logout"):
         st.session_state.login_state = None
@@ -21,8 +23,6 @@ def show_admin():
 
     # Connect to DuckDB
     con = get_connection()
-
-    # Get list of tables in DuckDB
     tables = con.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='main'").fetchall()
     tables = [t[0] for t in tables]
 
@@ -31,7 +31,6 @@ def show_admin():
 
     for table in tables:
         st.markdown(f"### {table}")
-        
         if table == "mood_sleep_logs":
             query = """
             SELECT mood_sleep_logs.*, users.name as user_name
@@ -57,3 +56,19 @@ def show_admin():
         st.dataframe(df)
 
     con.close()
+
+    # --- Database Download Section ---
+    st.markdown("---")
+    st.subheader("💾 Download Current Database")
+    st.info("Click below to download the latest database snapshot. You can then upload it to GitHub manually.")
+
+    if os.path.exists(DB_Path): #using DB_Path from db.py
+        with open(DB_Path, "rb") as f:
+            st.download_button(
+                label="⬇️ Download Database File",
+                data=f,
+                file_name="mothercare.duckdb",
+                mime="application/octet-stream"
+            )
+    else:
+        st.warning("⚠️ Database file not found on this deployment.")
