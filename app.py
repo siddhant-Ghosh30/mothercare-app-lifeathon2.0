@@ -33,7 +33,7 @@ elif st.session_state.login_state == 'user' and st.session_state.logged_in:
 
 # if not logged in, show login/signup options
 else:
-    option = st.radio ("Login as:", ["User", "Admin"])
+    option = st.radio ("Login as:", ["User", "Admin (For Healthcare Providers)"])
 
     if option == "User":
         st.subheader("User Access")
@@ -82,7 +82,7 @@ else:
                         st.error("Invalid credentials. Please try again or create a new account if you are not registered.")
                     
 
-    elif option == "Admin":
+    elif option == "Admin (For Healthcare Providers)":
         st.subheader("Admin Login")
         with st.form("admin_login_form"):
             username = st.text_input("Username")
