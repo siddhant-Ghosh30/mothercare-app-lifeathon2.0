@@ -12,14 +12,14 @@ def show_mood_sleep_logs():
     with st.form("mood_sleep_form"):
         st.write("Log your mood and sleep for today:")
         mood = st.slider(
-            "Rate your mood today (1 = Very Low, 10 = Excellent):", 
+            "Hey, how are you feeling today? (1 = Very Low, 10 = Excellent):", 
             min_value=1, 
             max_value=10, 
             value=5,  # Default to middle
             step=1
         )
         sleep_hours = st.number_input(
-            "Hours of sleep:", 
+            "How many hours of sleep did you get?: ", 
             min_value=0.0, 
             max_value=24.0, 
             value=8.0, 
